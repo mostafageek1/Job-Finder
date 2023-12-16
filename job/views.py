@@ -1,5 +1,6 @@
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 from .models import Job
 from django.core.paginator import Paginator
 from .forms import ApplyForm, JobForm
@@ -32,6 +33,7 @@ def job_detail(request, slug):
     context = {'job': job_detail, 'form': form}
     return render(request, 'job/job_detail.html', context)
 
+@login_required
 def add_job(request):
     if request.method == 'POST':
         form = JobForm(request.POST, request.FILES)
