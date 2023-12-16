@@ -4,17 +4,20 @@ from django.contrib.auth.decorators import login_required
 from .models import Job
 from django.core.paginator import Paginator
 from .forms import ApplyForm, JobForm
+from .filters import JobFilter
 
 
 def job_list(request):
-    job_list = Job.objects.all()
-    
-    paginator = Paginator(job_list, 1)
+    job_list = Job.objects.all().order_by('-published_at')
+
+    myfilter = JobFilter(request.GET, queryset=job_list)
+    job_list = myfilter.qs
+
+    paginator = Paginator(job_list, 3)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-
-    context = {'jobs':page_obj}
+    context = {'jobs':page_obj, 'myfilter':myfilter}
     return render(request, 'job/job_list.html', context)
 
 def job_detail(request, slug):
